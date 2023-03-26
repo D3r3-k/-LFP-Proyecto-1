@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class Abstracto(ABC):
     def __init__(self, fila, columna):
         self.fila = fila

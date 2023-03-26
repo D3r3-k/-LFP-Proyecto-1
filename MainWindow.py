@@ -14,6 +14,7 @@ class MainWindow(tk.Tk):
         self.contenido_archivo = ""
         self.background = "#333333"
         self.lista_respuestas = []
+        self.lista_errores = []
         # VARIABLES GRAFICA
         self.titulo = ''
         self.figura = ''
@@ -44,7 +45,7 @@ class MainWindow(tk.Tk):
         archivo_menu.add_command(label="Guardar Como",
                                  command=self.guardar_archivo_como)
         archivo_menu.add_command(label="Analizar", command=self.analizar)
-        archivo_menu.add_command(label="Errores", command=self.errores)
+        archivo_menu.add_command(label="Errores", command=self.generar_errores)
         archivo_menu.add_separator()
         archivo_menu.add_command(label="Salir", command=self.quit())
         # MENU AYUDA
@@ -71,17 +72,22 @@ class MainWindow(tk.Tk):
         right_header = tk.Frame(right_frame)
         right_header.pack(side=tk.TOP, fill="both")
 
-        ruta_label = tk.Label(right_header, text="Ruta: ",font=("Arial Bold", 12))
+        ruta_label = tk.Label(right_header, text="Ruta: ",
+                              font=("Arial Bold", 12))
         ruta_label.pack()
         self.ruta_label_t = tk.Label(right_header, text="", font=("Arial", 12))
         self.ruta_label_t.pack(anchor="center")
-        btn_guardar = tk.Button(right_header, text="Graficar", command=self.graficar_resultados)
+        btn_guardar = tk.Button(
+            right_header, text="Graficar", command=self.graficar_resultados)
         btn_guardar.pack(side='left', pady=(10))
         # TEXTAREA
-        self.text_area = tk.Text(right_frame, padx=10, pady=10, font=("Arial", 12), wrap='none', width=50)
+        self.text_area = tk.Text(right_frame, padx=10, pady=10, font=(
+            "Arial", 12), wrap='none', width=50)
         self.scroll_y = tk.Scrollbar(right_frame, command=self.text_area.yview)
-        self.scroll_x = tk.Scrollbar(right_frame, command=self.text_area.xview, orient='horizontal')
-        self.text_area.configure(yscrollcommand=self.scroll_y.set, xscrollcommand=self.scroll_x.set)
+        self.scroll_x = tk.Scrollbar(
+            right_frame, command=self.text_area.xview, orient='horizontal')
+        self.text_area.configure(
+            yscrollcommand=self.scroll_y.set, xscrollcommand=self.scroll_x.set)
         self.scroll_y.pack(side='right', fill='y')
         self.scroll_x.pack(side='bottom', fill='x')
         self.text_area.pack(fill=tk.BOTH, expand=True, side='left')
@@ -92,9 +98,11 @@ class MainWindow(tk.Tk):
         left_header = tk.Frame(left_frame)
         left_header.pack(side=tk.TOP, fill="both")
 
-        ruta_label = tk.Label(left_header, text="Errores",font=("Arial Bold", 12))
+        ruta_label = tk.Label(left_header, text="Errores",
+                              font=("Arial Bold", 12))
         ruta_label.pack()
-        btn_guardar = tk.Button(left_header, text="Guardar Errores", command=self.guardar_archivo_errores)
+        btn_guardar = tk.Button(
+            left_header, text="Guardar Errores", command=self.guardar_archivo_errores)
         btn_guardar.pack(side='right', pady=20)
         # TEXTAREA ERRORES
         self.text_area_err = tk.Text(left_frame, padx=10,
@@ -192,13 +200,14 @@ class MainWindow(tk.Tk):
 
     def analizar(self):
         self.lista_respuestas = []
+        self.lista_errores = []
         contenido = self.text_area.get('1.0', tk.END)
         analizar_caneda(contenido)
-        self.lista_respuestas = obtener_respuestas()
-        self.generar_errores()
+        self.lista_respuestas, self.lista_errores = obtener_respuestas()
 
     def graficar_resultados(self):
         self.graficar(self.lista_respuestas)
+        self.generar_errores()
 
     def graficar(self, lista_nodos):
         self.ruta_grafica = ''
@@ -335,19 +344,10 @@ class MainWindow(tk.Tk):
             pass
         archivoDOT.close()
 
-    def errores(self):
-        print(f">>---------------------<<")
-        for r in lista_errores:
-            print(f"Lexema: {r.getValor(None)}")
-            print(f"Tipo: {r.getTipo()}")
-            print(f"Fila: {r.getFila()}")
-            print(f"Columna: {r.getColumna()}")
-            print(f">>---------------------<<")
-
     def generar_errores(self):
         self.text_area_err.delete(1.0, tk.END)
         cadena = "{\n"
-        for i, r in enumerate(lista_errores):
+        for i, r in enumerate(self.lista_errores):
             cadena += "    {\n"
             cadena += '       "Descripcion del Token": {\n'
             cadena += f'          "No": {i+1},\n'
@@ -358,9 +358,17 @@ class MainWindow(tk.Tk):
             cadena += "       }\n"
             cadena += "    },\n"
         cadena += "}"
-        print(cadena)
         self.text_area_err.insert(tk.END, cadena)
         pass
+
+    # def errores(self):
+    #     print(f">>---------------------<<")
+    #     for r in lista_errores:
+    #         print(f"Lexema: {r.getValor(None)}")
+    #         print(f"Tipo: {r.getTipo()}")
+    #         print(f"Fila: {r.getFila()}")
+    #         print(f"Columna: {r.getColumna()}")
+    #         print(f">>---------------------<<")
 
 
 if __name__ == "__main__":

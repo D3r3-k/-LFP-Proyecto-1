@@ -39,7 +39,7 @@ global lista_errores
 global lista_nodos
 
 lista_operaciones = []
-lista_lexemas = []  # Analizar Caneda -> obtiene todos los lexemas
+lista_lexemas = []
 lista_errores = []
 lista_nodos = []
 n_linea = 1
@@ -47,9 +47,10 @@ n_columna = 1
 
 
 def analizar_caneda(cadena):
+    global lista_errores
     global n_linea
     global n_columna
-    global lista_lexemas
+    lista_errores = []
     lexema = ''
     index = 0
     while cadena:
@@ -210,6 +211,7 @@ def realizar_operacion(es_hijo=False):
 def obtener_respuestas():
     global lista_operaciones
     global lista_nodos
+    global lista_errores
     lista_nodos = []
     lista_operaciones = []
     while True:
@@ -218,11 +220,10 @@ def obtener_respuestas():
             lista_operaciones.append(operacion)
         else:
             break
-    return lista_nodos
+    return lista_nodos, lista_errores
 
 
 def analizar_errores(palabra):
-    global lista_errores
     for segunda_palabra in lexemas_reservados:
         n_col = 1
         armar_palabra = ''
