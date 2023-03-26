@@ -1,0 +1,32 @@
+{
+    {
+        {
+            "Operacion": "Tangente"
+            "Valor1": 4.5
+        },
+        {
+            "Operacion": "Resta"
+            "Valor1": 4.5
+            "Valor2": [
+                "Operacion": "Potencia"
+                "Valor1": 10
+                "Valor2": 3
+            ]
+        },
+        {
+            "Operacion": "Multiplicacion"
+            "Valor1": [
+                "Operacion": "Seno"
+                "Valor1": 90
+            ]
+            "Valor2": 5.32
+        }
+        "Texto": "Realizacion de Operaciones"
+        "Color-Fondo-Nodo": "Amarillo"
+        "Color-Fuente-Nodo": "Rojo"
+        "Forma-Nodo": "Circulo"
+    }
+    }
+
+
+
