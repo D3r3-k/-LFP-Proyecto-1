@@ -2,9 +2,11 @@ from Abstractos.Abstracto import Abstracto
 
 
 class Aritmetica(Abstracto):
-    def __init__(self, valor1, valor2, operacion, fila, columna):
+    def __init__(self, operacion, valor1, valor2, nodo_valor1, nodo_valor2, fila, columna):
         self.valor1 = valor1
         self.valor2 = valor2
+        self.nodo_valor1 = nodo_valor1
+        self.nodo_valor2 = nodo_valor2
         self.operacion = operacion
         super().__init__(fila, columna)
 
@@ -34,6 +36,12 @@ class Aritmetica(Abstracto):
             return temp_val1 ** (1 / temp_val2)
         else:
             return None
+
+    def getNodo_valor1(self):
+        return self.nodo_valor1
+
+    def getNodo_valor2(self):
+        return self.nodo_valor2
 
     def getOperacion(self, arbol):
         return self.operacion.getValor(arbol)

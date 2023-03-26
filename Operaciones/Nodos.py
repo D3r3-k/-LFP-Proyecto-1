@@ -42,12 +42,6 @@ class Nodo_Aritmetico():
     def getNodo_valor2(self):
         return self.nodo_valor2
 
-    def setNodo_valor1(self, nodo):
-        self.nodo_valor1 = nodo
-
-    def setNodo_valor2(self, nodo):
-        self.nodo_valor2 = nodo
-
     def getResultado(self):
         return self.resultado.getValor(None)
 
@@ -67,9 +61,6 @@ class Nodo_Trigonometrico():
 
     def getNodo_valor1(self):
         return self.nodo_valor1
-
-    def setNodo_valor1(self, nodo):
-        self.nodo_valor1 = nodo
 
     def getResultado(self):
         return self.resultado.getValor(None)

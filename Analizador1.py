@@ -158,12 +158,14 @@ def realizar_operacion(es_hijo=False):
         elif lex.getValor(None) == 'Valor1':
             valor1 = lista_lexemas_temp.pop(0)
             if valor1.getValor(None) == '[':
-                valor1 = realizar_operacion(True)
+                valor1, nodo = realizar_operacion(True)
+                nodo_valor1 = nodo
         # OBTENER VALOR 2
         elif lex.getValor(None) == 'Valor2':
             valor2 = lista_lexemas_temp.pop(0)
             if valor2.getValor(None) == '[':
-                valor2 = realizar_operacion(True)
+                valor2, nodo = realizar_operacion(True)
+                nodo_valor2 = nodo
         # OBTENER TEXTOS PARA EL NODO
         elif lex.getValor(None) == 'Texto':
             texto = lista_lexemas_temp.pop(0)
@@ -173,47 +175,82 @@ def realizar_operacion(es_hijo=False):
             color_fuente = lista_lexemas_temp.pop(0)
         elif lex.getValor(None) == 'Forma-Nodo':
             forma = lista_lexemas_temp.pop(0)
+
+        # RETORNAR LOS VALORES
         if operacion and valor1 and valor2:
-            resultado = Aritmetica(valor1, valor2, operacion, f'{operacion.getFila()}:{operacion.getColumna()}', f'{valor2.getFila()}:{valor2.getColumna()}')
-            # nodo = Nodo_Aritmetico(operacion, valor1, valor2, nodo_valor1, nodo_valor2, resultado)
-            # lista_nodos.append(nodo)
-            return resultado
+            resultado = Aritmetica(operacion, valor1, valor2, nodo_valor1, nodo_valor2,
+                                   f'{operacion.getFila()}:{operacion.getColumna()}', f'{valor2.getFila()}:{valor2.getColumna()}')
+            nodo = Nodo_Aritmetico(
+                operacion, valor1, valor2, nodo_valor1, nodo_valor2, resultado)
+            if es_hijo:
+                return resultado, nodo
+            lista_nodos.append(nodo)
+            return resultado, None
         elif operacion and valor1 and (operacion.getValor(None) == 'Seno' or operacion.getValor(None) == 'Coseno' or operacion.getValor(None) == 'Tangente' or operacion.getValor(None) == 'Inverso'):
-            resultado = Trigonometricas(valor1, operacion, f'{operacion.getFila()}:{operacion.getColumna()}', f'{valor1.getFila()}:{valor1.getColumna()}')
-            # nodo = Nodo_Trigonometrico(operacion, valor1, nodo_valor1, resultado)
-            # lista_nodos.append(nodo)
-            return resultado
+            resultado = Trigonometricas(
+                operacion, valor1, nodo_valor1, f'{operacion.getFila()}:{operacion.getColumna()}', f'{valor1.getFila()}:{valor1.getColumna()}')
+            nodo = Nodo_Trigonometrico(
+                operacion, valor1, nodo_valor1, resultado)
+            if es_hijo:
+                return resultado, nodo
+            lista_nodos.append(nodo)
+            return resultado, None
         elif texto and color_fondo and color_fuente and forma:
-            resultado = Nodo_Texto(texto, color_fondo, color_fuente, forma)
-            return resultado
-    return None
+            nodo = Nodo_Texto(texto, color_fondo, color_fuente, forma)
+            # lista_nodos.append(nodo)
+            return None, None
+    return None, None
 
 
-def crear_nodo_aritmetico(operacion, valor1, valor2, nodo1, nodo2, respuesta):
+def crear_nodo(operacion, valor1, valor2, nodo1, nodo2, respuesta):
+    # Lógica para crear un nodo aritmético
     pass
 
 
-def crear_nodo_trigonometrico(operacion, valor1,  nodo1, respuesta):
+def crear_nodo(operacion, valor1, nodo1, respuesta):
+    # Lógica para crear un nodo trigonométrico
     pass
 
 
 def obtener_respuestas():
     global lista_operaciones
     global lista_nodos
+    lista_nodos = []
     lista_operaciones = []
     while True:
-        operacion = realizar_operacion()
+        operacion, nodo = realizar_operacion()
         if operacion:
             lista_operaciones.append(operacion)
         else:
             break
 
-    indice = 1
-    for operacion in lista_operaciones:
-        print(operacion)
-        # imprimir_nodos(operacion, indice)
+    indice = 0
+    for nodo in lista_nodos:
+        imprimir_nodo(nodo, indice)
         indice += 1
-    return lista_operaciones
+
+
+def imprimir_nodo(nodo, index):
+    espa = "    "
+    if isinstance(nodo, Nodo_Aritmetico):
+            print(f"[{index}]Tipo: {nodo.getOperacion()}")
+            if isinstance(nodo.getNodo_valor1(), Nodo_Aritmetico) or isinstance(nodo.getNodo_valor1(), Nodo_Trigonometrico):
+                imprimir_nodo(nodo.getNodo_valor1(), index)
+            else:
+                print(f"{espa}Valor 1: {nodo.getValor1()}")
+            if isinstance(nodo.getNodo_valor2(), Nodo_Aritmetico) or isinstance(nodo.getNodo_valor2(), Nodo_Trigonometrico):
+                imprimir_nodo(nodo.getNodo_valor2(), index)
+            else:
+                print(f"{espa}Valor 2: {nodo.getValor2()}")
+            print(f"{espa}Resultado: {nodo.getResultado()}")
+
+    if isinstance(nodo, Nodo_Trigonometrico):
+            print(f"[{index}]Tipo: {nodo.getOperacion()}")
+            if isinstance(nodo.getNodo_valor1(), Nodo_Aritmetico) or isinstance(nodo.getNodo_valor1(), Nodo_Trigonometrico):
+                imprimir_nodo(nodo.getNodo_valor1(), index)
+            else:
+                print(f"{espa}Valor 1: {nodo.getValor1()}")
+            print(f"{espa}Resultado: {nodo.getResultado()}")
 
 
 entrada = '''{
@@ -255,10 +292,6 @@ entrada = '''{
     }
 '''
 
-res = analizar_caneda(entrada)
-obtener_respuestas()
-for r in res:
-    print(r.getValor(None))
 
 # def analizar_errores(lexemas):
 #     n_col = 0

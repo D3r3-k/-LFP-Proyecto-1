@@ -3,9 +3,10 @@ from math import *
 
 
 class Trigonometricas(Abstracto):
-    def __init__(self, valor1, operacion, fila, columna):
+    def __init__(self, operacion, valor1, nodo_valor1, fila, columna):
         self.valor1 = valor1
         self.operacion = operacion
+        self.nodo_valor1 = nodo_valor1
         super().__init__(fila, columna)
 
     def getValor(self, arbol):
@@ -30,6 +31,9 @@ class Trigonometricas(Abstracto):
 
     def getValor1(self, arbol):
         return self.valor1.getValor(arbol)
+
+    def getNodo_valor1(self):
+        return self.nodo_valor1
 
     def getFila(self):
         return super().getFila()
