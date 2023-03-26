@@ -2,7 +2,7 @@ import tkinter as tk
 import tkinter.filedialog as fd
 import tkinter.messagebox as mb
 from Analizador import *
-from graficar import *
+from graficar import graficar
 
 class MainWindow(tk.Tk):
     def __init__(self):
@@ -54,15 +54,12 @@ class MainWindow(tk.Tk):
         # SECCION IZQUIERDA
         left_frame = tk.Frame(self, padx=20, pady=20, width=400)
         left_frame.pack(side=tk.LEFT, fill="both")
-        label = tk.Label(left_frame, text="Proyecto 1",
-                         font=("Arial Bold", 14))
+        label = tk.Label(left_frame, text="Proyecto 1",font=("Arial Bold", 14))
         label.pack()
         # BOTONES
-        name_button = tk.Button(
-            left_frame, text="Analizar", command=self.analizar)
+        name_button = tk.Button(left_frame, text="Analizar", command=self.analizar)
         name_button.pack(pady=10)
-        info_button = tk.Button(
-            left_frame, text="Graficar", command=self.abrir_archivo)
+        info_button = tk.Button(left_frame, text="Graficar", command=self.abrir_archivo)
         info_button.pack(pady=10)
         self.name_label = tk.Label(left_frame, text="", padx=20, pady=20)
         self.name_label.pack()

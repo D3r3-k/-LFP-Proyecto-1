@@ -9,7 +9,11 @@
             "Valor1": 4.5
             "Valor2": [
                 "Operacion": "Potencia"
-                "Valor1": 10
+                "Valor1": [
+                    "Operacion": "Resta"
+                    "Valor1": 10
+                    "Valor2": 3
+                ]
                 "Valor2": [
                     "Operacion": "Suma"
                     "Valor1": 10
@@ -30,7 +34,11 @@
             "Valor2": [
                 "Operacion": "Resta"
                 "Valor1": 10
-                "Valor2": 3
+                "Valor2": [
+                    "Operacion": "Resta"
+                    "Valor1": 2
+                    "Valor2": 3
+                ]
             ]
         }
         "Texto": "Realizacion de Operaciones"

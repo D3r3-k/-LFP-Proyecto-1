@@ -49,7 +49,7 @@ def graficar(lista_nodos):
                     color_fondo = "#000"
                 break
 
-        archivo = "nodos.dot"
+        archivo = "render/nodos.dot"
         archivoDOT = open(archivo, "w")
         archivoDOT.write("digraph{\n")
         archivoDOT.write('label = "' + titulo+'";\n')
