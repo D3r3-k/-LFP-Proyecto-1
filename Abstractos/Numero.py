@@ -9,6 +9,9 @@ class Numero(Abstracto):
     def getValor(self, arbol):
         return self.valor
 
+    def setValor(self, valor):
+        self.lexema = valor
+
     def getFila(self):
         return super().getFila()
 

@@ -9,6 +9,9 @@ class Lexema(Abstracto):
     def getValor(self, arbol):
         return self.lexema
 
+    def setValor(self, valor):
+        self.lexema = valor
+
     def getFila(self):
         return super().getFila()
 
