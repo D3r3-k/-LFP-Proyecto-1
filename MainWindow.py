@@ -1,8 +1,8 @@
 import tkinter as tk
 import tkinter.filedialog as fd
 import tkinter.messagebox as mb
-from Analizador1 import *
-
+from Analizador import *
+from graficar import *
 
 class MainWindow(tk.Tk):
     def __init__(self):
@@ -166,7 +166,8 @@ class MainWindow(tk.Tk):
     def analizar(self):
         contenido = self.text_area.get('1.0', tk.END)
         analizar_caneda(contenido)
-        obtener_respuestas()
+        lista = obtener_respuestas()
+        graficar(lista)
 
     def errores(self):
         pass

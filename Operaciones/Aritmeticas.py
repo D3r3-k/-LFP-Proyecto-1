@@ -1,7 +1,7 @@
 from Abstractos.Abstracto import Abstracto
 
 
-class Aritmetica(Abstracto):
+class N(Abstracto):
     def __init__(self, operacion, valor1, valor2, nodo_valor1, nodo_valor2, fila, columna):
         self.valor1 = valor1
         self.valor2 = valor2
@@ -20,20 +20,20 @@ class Aritmetica(Abstracto):
             temp_val2 = self.valor2.getValor(arbol)
         # OPERAR VALORES
         if self.operacion.getValor(arbol) == 'Suma':
-            return temp_val1 + temp_val2
+            return round(temp_val1 + temp_val2, 4)
         elif self.operacion.getValor(arbol) == 'Resta':
-            return temp_val1 - temp_val2
+            return round(temp_val1 - temp_val2, 4)
         elif self.operacion.getValor(arbol) == 'Multiplicacion':
-            return temp_val1 * temp_val2
+            return round(temp_val1 * temp_val2, 4)
         elif self.operacion.getValor(arbol) == 'Division':
             try:
-                return temp_val1 / temp_val2
+                return round(temp_val1 / temp_val2, 4)
             except ArithmeticError:
                 return 0
         elif self.operacion.getValor(arbol) == 'Potencia':
-            return temp_val1 ** temp_val2
+            return round(temp_val1 ** temp_val2, 4)
         elif self.operacion.getValor(arbol) == 'Raiz':
-            return temp_val1 ** (1 / temp_val2)
+            return round(temp_val1 ** (1 / temp_val2), 4)
         else:
             return None
 

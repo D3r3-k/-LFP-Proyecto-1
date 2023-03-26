@@ -16,13 +16,13 @@ class Trigonometricas(Abstracto):
             temp_val = self.valor1.getValor(arbol)
         # OPERAR VALORES
         if self.operacion.getValor(arbol) == 'Seno':
-            return sin(temp_val)
+            return round(sin(temp_val), 4)
         elif self.operacion.getValor(arbol) == 'Coseno':
-            return cos(temp_val)
+            return round(cos(temp_val), 4)
         elif self.operacion.getValor(arbol) == 'Tangente':
-            return tan(temp_val)
+            return round(tan(temp_val), 4)
         elif self.operacion.getValor(arbol) == 'Inverso':
-            return 1/temp_val
+            return round(1 / temp_val, 4)
         else:
             return None
 
