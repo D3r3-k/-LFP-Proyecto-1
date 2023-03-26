@@ -55,14 +55,7 @@ class MainWindow(tk.Tk):
         left_frame = tk.Frame(self, padx=20, pady=20, width=400)
         left_frame.pack(side=tk.LEFT, fill="both")
         label = tk.Label(left_frame, text="Proyecto 1",font=("Arial Bold", 14))
-        label.pack()
-        # BOTONES
-        name_button = tk.Button(left_frame, text="Analizar", command=self.analizar)
-        name_button.pack(pady=10)
-        info_button = tk.Button(left_frame, text="Graficar", command=self.abrir_archivo)
-        info_button.pack(pady=10)
-        self.name_label = tk.Label(left_frame, text="", padx=20, pady=20)
-        self.name_label.pack()
+        label.pack(padx=60)
 
         # SECCION DERECHA
         right_frame = tk.Frame(self, padx=20, pady=20, width=400)
@@ -111,7 +104,7 @@ class MainWindow(tk.Tk):
         seccion_label = tk.Label(
             info_window, text=f"Sección: {seccion}", padx=10, pady=10, font=("Arial", 14))
         seccion_label.place(x=10, y=90)
-        image = tk.PhotoImage(file="imgs/logo.png")
+        image = tk.PhotoImage(file="./imgs/logo.png")
         img_scal = image.subsample(2, 2)
         image_label = tk.Label(info_window, image=img_scal)
         image_label.image = img_scal

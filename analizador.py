@@ -1,7 +1,7 @@
 from Abstractos.Lexema import Lexema
 from Abstractos.Numero import Numero
 from Abstractos.Error import Error
-from Operaciones.Aritmeticas import N
+from Operaciones.Aritmeticas import Aritmetica
 from Operaciones.Trigonometricas import Trigonometricas
 from Operaciones.Nodos import *
 
@@ -31,17 +31,26 @@ lexemas_reservados = {
     '{',
     '}',
 }
-
+lexemas_operadores = {
+    'Suma',
+    'Resta',
+    'Multiplicacion',
+    'Division',
+    'Potencia',
+    'Raiz',
+    'Seno',
+    'Coseno',
+    'Tangente',
+    'Inverso'
+}
 global n_linea
 global n_columna
 global lista_operaciones
 global lista_lexemas_temp
-global lista_lexemas
 global lista_errores
 global lista_nodos
 
 lista_operaciones = []
-lista_lexemas_temp = []  # Analizar Caneda -> obtiene todos los lexemas
 lista_lexemas = []  # Analizar Caneda -> obtiene todos los lexemas
 lista_errores = []
 lista_nodos = []
@@ -52,7 +61,6 @@ n_columna = 1
 def analizar_caneda(cadena):
     global n_linea
     global n_columna
-    global lista_lexemas_temp
     global lista_lexemas
     lexema = ''
     index = 0
@@ -64,7 +72,6 @@ def analizar_caneda(cadena):
             if lexema and cadena:
                 n_columna += 1
                 lex = Lexema(lexema, n_linea, n_columna)
-                lista_lexemas_temp.append(lex)
                 lista_lexemas.append(lex)
                 n_columna += len(lexema)+1
                 index = 0
@@ -73,13 +80,11 @@ def analizar_caneda(cadena):
             if lexema and cadena:
                 n_columna += 1
                 lex_num = Numero(token, n_linea, n_columna)
-                lista_lexemas_temp.append(lex_num)
                 lista_lexemas.append(lex_num)
                 n_columna += len(str(token))+1
                 index = 0
         elif char == '[' or char == ']':
             lex = Lexema(char, n_linea, n_columna)
-            lista_lexemas_temp.append(lex)
             lista_lexemas.append(lex)
             cadena = cadena[1:]
             index = 0
@@ -97,7 +102,7 @@ def analizar_caneda(cadena):
             cadena = cadena[1:]
             index = 0
             n_columna += 1
-    return lista_lexemas_temp
+    return lista_lexemas
 
 
 def armar_lexema(cadena):
@@ -134,7 +139,7 @@ def armar_numero(cadena):
 
 
 def realizar_operacion(es_hijo=False):
-    global lista_lexemas_temp
+    global lista_lexemas
     # OPERACIONES
     operacion = None
     valor1 = None
@@ -148,45 +153,50 @@ def realizar_operacion(es_hijo=False):
     color_fondo = None
     color_fuente = None
     forma = None
-    while lista_lexemas_temp:
-        lex = lista_lexemas_temp.pop(0)
+    while lista_lexemas:
+        lex = lista_lexemas.pop(0)
         # OBTENER TIPO DE OPERACION
         if lex.getValor(None) == 'Operacion':
-            operacion = lista_lexemas_temp.pop(0)
+            operacion = lista_lexemas.pop(0)
+            # SI LA OPERACION NO ESTA EN LA LISTA RESERVADA
 
         # OBTENER VALOR 1
         elif lex.getValor(None) == 'Valor1':
-            valor1 = lista_lexemas_temp.pop(0)
+            valor1 = lista_lexemas.pop(0)
             if valor1.getValor(None) == '[':
                 valor1, nodo = realizar_operacion(True)
                 nodo_valor1 = nodo
         # OBTENER VALOR 2
         elif lex.getValor(None) == 'Valor2':
-            valor2 = lista_lexemas_temp.pop(0)
+            valor2 = lista_lexemas.pop(0)
             if valor2.getValor(None) == '[':
                 valor2, nodo = realizar_operacion(True)
                 nodo_valor2 = nodo
         # OBTENER TEXTOS PARA EL NODO
         elif lex.getValor(None) == 'Texto':
-            texto = lista_lexemas_temp.pop(0)
+            texto = lista_lexemas.pop(0)
         elif lex.getValor(None) == 'Color-Fondo-Nodo':
-            color_fondo = lista_lexemas_temp.pop(0)
+            color_fondo = lista_lexemas.pop(0)
         elif lex.getValor(None) == 'Color-Fuente-Nodo':
-            color_fuente = lista_lexemas_temp.pop(0)
+            color_fuente = lista_lexemas.pop(0)
         elif lex.getValor(None) == 'Forma-Nodo':
-            forma = lista_lexemas_temp.pop(0)
+            forma = lista_lexemas.pop(0)
 
         # RETORNAR LOS VALORES
         if operacion and valor1 and valor2:
-            resultado = N(operacion, valor1, valor2, nodo_valor1, nodo_valor2,f'{operacion.getFila()}:{operacion.getColumna()}', f'{valor2.getFila()}:{valor2.getColumna()}')
-            nodo = Nodo_Aritmetico(operacion, valor1, valor2, nodo_valor1, nodo_valor2, resultado)
+            resultado = Aritmetica(operacion, valor1, valor2, nodo_valor1, nodo_valor2,
+                          f'{operacion.getFila()}:{operacion.getColumna()}', f'{valor2.getFila()}:{valor2.getColumna()}')
+            nodo = Nodo_Aritmetico(
+                operacion, valor1, valor2, nodo_valor1, nodo_valor2, resultado)
             if es_hijo:
                 return resultado, nodo
             lista_nodos.append(nodo)
             return resultado, None
         elif operacion and valor1 and (operacion.getValor(None) == 'Seno' or operacion.getValor(None) == 'Coseno' or operacion.getValor(None) == 'Tangente' or operacion.getValor(None) == 'Inverso'):
-            resultado = Trigonometricas(operacion, valor1, nodo_valor1, f'{operacion.getFila()}:{operacion.getColumna()}', f'{valor1.getFila()}:{valor1.getColumna()}')
-            nodo = Nodo_Trigonometrico(operacion, valor1, nodo_valor1, resultado)
+            resultado = Trigonometricas(
+                operacion, valor1, nodo_valor1, f'{operacion.getFila()}:{operacion.getColumna()}', f'{valor1.getFila()}:{valor1.getColumna()}')
+            nodo = Nodo_Trigonometrico(
+                operacion, valor1, nodo_valor1, resultado)
             if es_hijo:
                 return resultado, nodo
             lista_nodos.append(nodo)
@@ -196,6 +206,7 @@ def realizar_operacion(es_hijo=False):
             lista_nodos.append(nodo)
             return None, None
     return None, None
+
 
 def obtener_respuestas():
     global lista_operaciones
@@ -219,45 +230,100 @@ def obtener_respuestas():
 def imprimir_nodo(nodo, index):
     espa = "    "
     if isinstance(nodo, Nodo_Aritmetico):
-            print(f"[{index}]Tipo: {nodo.getOperacion()}")
-            if isinstance(nodo.getNodo_valor1(), Nodo_Aritmetico) or isinstance(nodo.getNodo_valor1(), Nodo_Trigonometrico):
-                imprimir_nodo(nodo.getNodo_valor1(), index)
-            else:
-                print(f"{espa}Valor 1: {nodo.getValor1()}")
-            if isinstance(nodo.getNodo_valor2(), Nodo_Aritmetico) or isinstance(nodo.getNodo_valor2(), Nodo_Trigonometrico):
-                imprimir_nodo(nodo.getNodo_valor2(), index)
-            else:
-                print(f"{espa}Valor 2: {nodo.getValor2()}")
-            print(f"{espa}Resultado: {nodo.getResultado()}")
+        print(f"[{index}]Tipo: {nodo.getOperacion()}")
+        if isinstance(nodo.getNodo_valor1(), Nodo_Aritmetico) or isinstance(nodo.getNodo_valor1(), Nodo_Trigonometrico):
+            imprimir_nodo(nodo.getNodo_valor1(), index)
+        else:
+            print(f"{espa}Valor 1: {nodo.getValor1()}")
+        if isinstance(nodo.getNodo_valor2(), Nodo_Aritmetico) or isinstance(nodo.getNodo_valor2(), Nodo_Trigonometrico):
+            imprimir_nodo(nodo.getNodo_valor2(), index)
+        else:
+            print(f"{espa}Valor 2: {nodo.getValor2()}")
+        print(f"{espa}Resultado: {nodo.getResultado()}")
 
     if isinstance(nodo, Nodo_Trigonometrico):
-            print(f"[{index}]Tipo: {nodo.getOperacion()}")
-            if isinstance(nodo.getNodo_valor1(), Nodo_Aritmetico) or isinstance(nodo.getNodo_valor1(), Nodo_Trigonometrico):
-                imprimir_nodo(nodo.getNodo_valor1(), index)
-            else:
-                print(f"{espa}Valor 1: {nodo.getValor1()}")
-            print(f"{espa}Resultado: {nodo.getResultado()}")
+        print(f"[{index}]Tipo: {nodo.getOperacion()}")
+        if isinstance(nodo.getNodo_valor1(), Nodo_Aritmetico) or isinstance(nodo.getNodo_valor1(), Nodo_Trigonometrico):
+            imprimir_nodo(nodo.getNodo_valor1(), index)
+        else:
+            print(f"{espa}Valor 1: {nodo.getValor1()}")
+        print(f"{espa}Resultado: {nodo.getResultado()}")
     if isinstance(nodo, Nodo_Texto):
-        print(nodo.getTexto(), nodo.getColorFuente(), nodo.getColorFondo(), nodo.getForma())
+        print(nodo.getTexto(), nodo.getColorFuente(),
+              nodo.getColorFondo(), nodo.getForma())
 
 
-# def analizar_errores(lexemas):
-#     n_col = 0
-#     lista_errores = []
-#     for lexema in lexemas:
-#         for lex in lexema.getValor(None):
-#             error_encontra = False
-#             indice = 0
-#             for i in "Operacion"[indice]:
-#                 if lex != i:
-#                     indice += 1
-#                     n_col += 1
-#                     continue
-#                 else:
-#                     indice += 1
-#                     error_encontra = True
-#             if not error_encontra:
-#                 lex_err = Error(lex, "Error", lexema.getFila(), lexema.getColumna()+n_col)
-#                 lista_errores.append(lex_err)
-#                 break
-#     return lista_errores
+
+    # return palabras_validas
+
+
+entrada = '''
+{
+    {
+        {
+            "Operacion": "Ta ngente"
+            "Valor1": 4 .5
+        },
+        {
+            "Operacion": "Re sta"
+            "Valor1": 4.5
+            "Valor2": [
+                "Operacion": "Pote-ncia"
+                "Valor1": [
+                    "Operacion": "Resta"
+                    "Valor1": 10
+                    "Valor2": 3
+                ]
+                "Valor2": [
+                    "Operacion": "Suma"
+                    "Valor1": 10
+                    "Valor2": 3
+                ]
+            ]
+        },
+        {
+            "Operacion": "Multiplicacion"
+            "Valor1": [
+                "Operacion": "Seno"
+                "Valor1": [
+                    "Operacion": "Potencia"
+                    "Valor1": 2
+                    "Valor2": 3
+                ]
+            ]
+            "Valor2": [
+                "Operacion": "Resta"
+                "Valor1": 10
+                "Valor2": [
+                    "Operacion": "Resta"
+                    "Valor1": 2
+                    "Valor2": [
+                        "Operacion": "Resta"
+                        "Valor1": 2
+                        "Valor2": [
+                            "Operacion": "Resta"
+                            "Valor1": 2
+                            "Valor2": [
+                                "Operacion": "Resta"
+                                "Valor1": 2
+                                "Valor2": [
+                                    "Operacion": "Resta"
+                                    "Valor1": 2
+                                    "Valor2": 1
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        }
+        "Texto": "Realizacion de Operaciones"
+        "Color-Fondo-Nodo": "Amarillo"
+        "Color-Fuente-Nodo": "Rojo"
+        "Forma-Nodo": "Circulo"
+    }
+}
+'''
+
+analizar_caneda(entrada)
+res = obtener_respuestas()

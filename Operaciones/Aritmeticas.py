@@ -1,7 +1,7 @@
 from Abstractos.Abstracto import Abstracto
 
 
-class N(Abstracto):
+class Aritmetica(Abstracto):
     def __init__(self, operacion, valor1, valor2, nodo_valor1, nodo_valor2, fila, columna):
         self.valor1 = valor1
         self.valor2 = valor2
