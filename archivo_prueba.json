@@ -1,11 +1,11 @@
-{ ?
-    {
+{
+    {¿
         "Operacion":"Resta"
         "Valor1":6.5
         "Valor2":3.5
-    }, *
+    },
     {
-        "Operacion":"Multiplicacion" ^
+        "Operacion":"Multiplicacion"
         "Valor1":[
             "Operacion":"Potencia"
             "Valor1":2
@@ -23,7 +23,7 @@
                 "Valor1":9
                 "Valor2":2
                 ]
-        ] +
+        ]
     },
     {
         "Operacion":"Suma"
@@ -32,7 +32,7 @@
         "Valor1":90
         ]
         "Valor2":5.32
-    },
+    },-
     {
         "Operacion":"Resta"
         "Valor1": [
@@ -53,10 +53,10 @@
                 "Valor2": 5
             ]
         ]
-    }
+    }º
     "Texto":"Realizacion de Operaciones"
     "Color-Fondo-Nodo":"Amarillo"
     "Color-Fuente-Nodo":"Rojo"
     "Forma-Nodo":"Circulo"
-    @
 }
+

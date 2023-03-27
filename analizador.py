@@ -42,8 +42,6 @@ lista_operaciones = []
 lista_lexemas = []
 lista_errores = []
 lista_nodos = []
-n_linea = 1
-n_columna = 1
 
 
 def analizar_caneda(cadena):
@@ -53,19 +51,21 @@ def analizar_caneda(cadena):
     lista_errores = []
     lexema = ''
     index = 0
+    n_linea = 1
+    n_columna = 1
     while cadena:
         char = cadena[index]
         index += 1
         if char == '\"':
-            lexema, cadena = armar_lexema(cadena[index:])
+            lexema, cadena = construir_lexema(cadena[index:])
             n_columna += 1
             if lexema and cadena:
                 lex = Lexema(lexema, n_linea, n_columna)
                 lista_lexemas.append(lex)
                 n_columna += len(lexema)+1
                 index = 0
-        elif es_numero(char):
-            token, cadena = armar_numero(cadena)
+        elif verificar_numero(char):
+            token, cadena = construir_numero(cadena)
             if lexema and cadena:
                 lex_num = Numero(token, n_linea, n_columna)
                 lista_lexemas.append(lex_num)
@@ -101,7 +101,7 @@ def analizar_caneda(cadena):
             index = 0
     return lista_lexemas
 
-def es_numero(numero):
+def verificar_numero(numero):
     numero = str(numero)
     try:
         int(numero)
@@ -113,7 +113,7 @@ def es_numero(numero):
         except ValueError:
             return False
 
-def armar_lexema(cadena):
+def construir_lexema(cadena):
     lexema = ''
     index = ''
     for char in cadena:
@@ -125,7 +125,7 @@ def armar_lexema(cadena):
     return None, None
 
 
-def armar_numero(cadena):
+def construir_numero(cadena):
     numero = ''
     index = ''
     is_decimal = False

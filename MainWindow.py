@@ -212,14 +212,16 @@ class MainWindow(tk.Tk):
                 "Exito", f"El archivo se guardo correctamente en: \n{nueva_ruta}")
 
     def guardar_archivo_errores(self):
-        nueva_ruta = fd.asksaveasfilename(defaultextension='.json', filetypes=[
-            ('Archivo Json', '*.json'),
-            ('Archivo de Texto', '*.txt')])
-        if nueva_ruta:
-            archivo = open(nueva_ruta, 'w')
-            archivo.write(self.text_area_err.get('1.0', tk.END))
-            mb.showinfo("Exito", f"El archivo se guardo correctamente en: \n{nueva_ruta}")
-        self.ruta_errores = nueva_ruta
+        if self.lista_errores:
+            nueva_ruta = fd.askdirectory(title="Selecciona una carpeta")
+            if nueva_ruta:
+                nueva_ruta += "/ERRORES_202001151.json"
+                archivo = open(nueva_ruta, 'w')
+                archivo.write(self.text_area_err.get('1.0', tk.END))
+                mb.showinfo("Exito", f"El archivo se guardo correctamente en: \n{nueva_ruta}")
+            self.ruta_errores = nueva_ruta
+        else:
+            mb.showerror("Advertencia", "No hay errores para ser almacenados.")
 
     def analizar(self):
         self.lista_respuestas = []
@@ -231,78 +233,76 @@ class MainWindow(tk.Tk):
 
     def graficar_resultados(self):
         self.graficar(self.lista_respuestas)
-        self.generar_errores()
 
     def graficar(self, lista_nodos):
         self.ruta_grafica = ''
-        try:
-            lista_colores = {
-                'Rojo': 'red',
-                'Verde': 'green',
-                'Azul': 'blue',
-                'Amarillo': 'yellow',
-                'Naranja': 'orange',
-                'Blanco': 'white',
-                'Negro': 'black',
-                'Gris': 'gray',
-                'Morado': 'purple',
-                'Cafe': 'brown',
-                'Rosa': 'pink'
-            }
-            for nodo in lista_nodos:
-                if isinstance(nodo, Nodo_Texto):
-                    self.titulo = nodo.getTexto()
-                    self.figura = "circle"
-                    if nodo.getColorFondo() in lista_colores.values():
-                        self.color_fondo = nodo.getColorFondo()
-                    elif nodo.getColorFondo() in lista_colores.keys():
-                        self.color_fondo = lista_colores[nodo.getColorFondo()]
-                    else:
-                        self.color_fondo = "#FFFFFF"
-                    if nodo.getColorFuente() in lista_colores.values():
-                        self.color_fuente = nodo.getColorFuente()
-                    elif nodo.getColorFuente() in lista_colores.keys():
-                        self.color_fuente = lista_colores[nodo.getColorFuente(
-                        )]
-                    else:
-                        self.color_fuente = "#000"
-                    break
+        if lista_nodos:
+            try:
+                lista_colores = {
+                    'Rojo': 'red',
+                    'Verde': 'green',
+                    'Azul': 'blue',
+                    'Amarillo': 'yellow',
+                    'Naranja': 'orange',
+                    'Blanco': 'white',
+                    'Negro': 'black',
+                    'Gris': 'gray',
+                    'Morado': 'purple',
+                    'Cafe': 'brown',
+                    'Rosa': 'pink'
+                }
+                for nodo in lista_nodos:
+                    if isinstance(nodo, Nodo_Texto):
+                        self.titulo = nodo.getTexto()
+                        self.figura = "circle"
+                        if nodo.getColorFondo() in lista_colores.values():
+                            self.color_fondo = nodo.getColorFondo()
+                        elif nodo.getColorFondo() in lista_colores.keys():
+                            self.color_fondo = lista_colores[nodo.getColorFondo()]
+                        else:
+                            self.color_fondo = "#FFFFFF"
+                        if nodo.getColorFuente() in lista_colores.values():
+                            self.color_fuente = nodo.getColorFuente()
+                        elif nodo.getColorFuente() in lista_colores.keys():
+                            self.color_fuente = lista_colores[nodo.getColorFuente(
+                            )]
+                        else:
+                            self.color_fuente = "#000"
+                        break
+                ruta = fd.asksaveasfilename(title="Guardar Frafica", initialfile="RESULTADOS_202001151", filetypes=[("PDF", "*.pdf"), ("SVG", "*.svg"), ("PNG", "*.png")], defaultextension=".png")
+                if ruta:
+                    nombre_archivo, extension = os.path.splitext(ruta)
+                    self.ruta_grafica = nombre_archivo + extension
+                    extension = extension.replace('.', '')
+                    archivo = f"{nombre_archivo}.dot"
+                    archivoDOT = open(archivo, "w")
+                    archivoDOT.write("digraph{\n")
+                    archivoDOT.write('label = "' + self.titulo+'";\n')
+                    archivoDOT.write('node [shape = ' + self.figura + '; fillcolor = '+self.color_fondo +
+                                    '; width = 1; fixedsize = true; style = filled; color = black; fontsize = 10;];\n')
+                    archivoDOT.write('edge [color = "red";];\n')
+                    archivoDOT.close()
 
-            ruta = fd.asksaveasfilename(title="Guardar Frafica", filetypes=[(
-                "PNG", "*.png"), ("PDF", "*.pdf"), ("SVG", "*.svg")], defaultextension=".png")
-            if ruta:
-                nombre_archivo, extension = os.path.splitext(ruta)
-                self.ruta_grafica = nombre_archivo + extension
-                extension = extension.replace('.', '')
-                archivo = f"{nombre_archivo}.dot"
-                archivoDOT = open(archivo, "w")
-                archivoDOT.write("digraph{\n")
-                archivoDOT.write('label = "' + self.titulo+'";\n')
-                archivoDOT.write('node [shape = ' + self.figura + '; fillcolor = '+self.color_fondo +
-                                 '; width = 1; fixedsize = true; style = filled; color = black; fontsize = 10;];\n')
-                archivoDOT.write('edge [color = "red";];\n')
-                archivoDOT.close()
+                    for i, nodo in enumerate(lista_nodos):
+                        self.imprimir_nodos(nodo, archivo, i)
 
-                for i, nodo in enumerate(lista_nodos):
-                    self.imprimir_nodos(nodo, archivo, i)
+                    archivoDOT = open(archivo, "a")
+                    archivoDOT.write("\n\n")
+                    archivoDOT.close()
 
-                archivoDOT = open(archivo, "a")
-                archivoDOT.write("\n\n")
-                archivoDOT.close()
+                    for i, nodo in enumerate(lista_nodos):
+                        self.enlazar_nodos(nodo, archivo, i)
 
-                for i, nodo in enumerate(lista_nodos):
-                    self.enlazar_nodos(nodo, archivo, i)
-
-                archivoDOT = open(archivo, "a")
-                archivoDOT.write("}\n")
-                archivoDOT.close()
-                os.system(f'dot.exe -T{extension} "'+archivo +
-                          '" -o "'+nombre_archivo+f'.{extension}"')
-                os.remove(archivo)
-                mb.showinfo("Exito", "Se ha generado el archivo en:\n"+ruta)
-        except Exception as e:
-            mb.showerror(
-                "Error", "No se ha podido generar el archivo\n"+str(e))
+                    archivoDOT = open(archivo, "a")
+                    archivoDOT.write("}\n")
+                    archivoDOT.close()
+                    os.system(f'dot.exe -T{extension} "'+archivo +'" -o "'+nombre_archivo+f'.{extension}"')
+                    os.remove(archivo)
+                    mb.showinfo("Exito", "Se ha generado el archivo en:\n"+ruta)
+            except Exception as e:
+                mb.showerror("Error", "No se ha podido generar el archivo\n"+str(e))
+        else:
+            mb.showwarning("Advertencia", "Debes analizar primero el archivo para generar la grafica.")
 
     def imprimir_nodos(self, nodo, ruta, n_padre=0, hijo=''):
         archivoDOT = open(ruta, "a")
@@ -370,27 +370,27 @@ class MainWindow(tk.Tk):
 
     def generar_errores(self):
         self.text_area_err.delete(1.0, tk.END)
-        cadena = "[\n"
-        for i, r in enumerate(self.lista_errores):
-            cadena += "    {\n"
-            cadena += '       "Descripcion del Token": {\n'
-            cadena += f'          "No": {i+1},\n'
-            cadena += f'          "Lexema": \"{r.getValor(None)}\",\n'
-            cadena += f'          "Tipo": "{r.getTipo()}",\n'
-            cadena += f'          "Columna": {r.getColumna()},\n'
-            cadena += f'          "Fila": {r.getFila()}\n'
-            cadena += "       }\n"
-            if i != len(self.lista_errores)-1:
-                cadena += "    },\n"
-        cadena += "    }\n"
-        cadena += "]"
-        self.text_area_err.insert(tk.END, cadena)
-        pass
+        if self.lista_errores:
+            cadena = "[\n"
+            for i, r in enumerate(self.lista_errores):
+                cadena += "    {\n"
+                cadena += '       "Descripcion del Token": {\n'
+                cadena += f'          "No": {i+1},\n'
+                cadena += f'          "Lexema": \"{r.getValor(None)}\",\n'
+                cadena += f'          "Tipo": "{r.getTipo()}",\n'
+                cadena += f'          "Columna": {r.getColumna()},\n'
+                cadena += f'          "Fila": {r.getFila()}\n'
+                cadena += "       }\n"
+                if i != len(self.lista_errores)-1:
+                    cadena += "    },\n"
+            cadena += "    }\n"
+            cadena += "]"
+            self.text_area_err.insert(tk.END, cadena)
 
     def mostrar_errores_anteriores(self):
-        self.text_area_err.delete(1.0, tk.END)
         try:
             if self.ruta_errores:
+                self.text_area_err.delete(1.0, tk.END)
                 contenido = ''
                 archivo = open(self.ruta_errores, 'r')
                 lineas = archivo.readlines()
@@ -402,14 +402,7 @@ class MainWindow(tk.Tk):
                 mb.showerror("Error", "No se ha seleccionado un archivo de errores")
         except Exception as e:
             mb.showerror("Error", str(e))
-    # def errores(self):
-    #     print(f">>---------------------<<")
-    #     for r in lista_errores:
-    #         print(f"Lexema: {r.getValor(None)}")
-    #         print(f"Tipo: {r.getTipo()}")
-    #         print(f"Fila: {r.getFila()}")
-    #         print(f"Columna: {r.getColumna()}")
-    #         print(f">>---------------------<<")
+
 
 
 if __name__ == "__main__":
