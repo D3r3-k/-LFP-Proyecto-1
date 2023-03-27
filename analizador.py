@@ -64,7 +64,7 @@ def analizar_caneda(cadena):
                 lista_lexemas.append(lex)
                 n_columna += len(lexema)+1
                 index = 0
-        elif char.isdigit():
+        elif es_numero(char):
             token, cadena = armar_numero(cadena)
             if lexema and cadena:
                 lex_num = Numero(token, n_linea, n_columna)
@@ -101,6 +101,17 @@ def analizar_caneda(cadena):
             index = 0
     return lista_lexemas
 
+def es_numero(numero):
+    numero = str(numero)
+    try:
+        int(numero)
+        return True
+    except ValueError:
+        try:
+            float(numero)
+            return True
+        except ValueError:
+            return False
 
 def armar_lexema(cadena):
     lexema = ''
