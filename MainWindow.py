@@ -1,4 +1,5 @@
 import os
+import sys
 import tkinter as tk
 import tkinter.filedialog as fd
 import tkinter.messagebox as mb
@@ -139,7 +140,11 @@ class MainWindow(tk.Tk):
         seccion_label = tk.Label(
             info_window, text=f"Sección: {seccion}", padx=10, pady=10, font=("Arial", 14))
         seccion_label.place(x=10, y=90)
-        image = tk.PhotoImage(file="./imgs/logo.png")
+        try:
+            resource_path = sys._MEIPASS
+        except AttributeError:
+            resource_path = os.path.abspath(os.path.dirname(__file__))
+        image = tk.PhotoImage(file=os.path.join(resource_path, 'logo.png'))
         img_scal = image.subsample(2, 2)
         image_label = tk.Label(info_window, image=img_scal)
         image_label.image = img_scal
