@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess
 import tkinter as tk
 import tkinter.filedialog as fd
 import tkinter.messagebox as mb
@@ -44,15 +45,14 @@ class MainWindow(tk.Tk):
         # MENU ARCHIVO
         archivo_menu.add_command(label="Abrir", command=self.abrir_archivo)
         archivo_menu.add_command(label="Guardar", command=self.guardar_archivo)
-        archivo_menu.add_command(label="Guardar Como",
-                                 command=self.guardar_archivo_como)
+        archivo_menu.add_command(label="Guardar Como",command=self.guardar_archivo_como)
         archivo_menu.add_command(label="Analizar", command=self.analizar)
         archivo_menu.add_command(label="Errores", command=self.mostrar_errores_anteriores)
         archivo_menu.add_separator()
         archivo_menu.add_command(label="Salir", command=self.quit())
         # MENU AYUDA
-        ayuda_menu.add_command(label="Manual de Usuario")
-        ayuda_menu.add_command(label="Manual Técnico")
+        ayuda_menu.add_command(label="Manual de Usuario", command=self.abrir_manual_usuario)
+        ayuda_menu.add_command(label="Manual Técnico", command=self.abrir_manual_tecnico)
         ayuda_menu.add_separator()
         ayuda_menu.add_command(label="Temas de Ayuda",
                                command=self.mostrar_ventana_info)
@@ -60,6 +60,22 @@ class MainWindow(tk.Tk):
         menu_bar.add_cascade(label="Archivo", menu=archivo_menu)
         menu_bar.add_cascade(label="Ayuda", menu=ayuda_menu)
         self.config(menu=menu_bar)
+
+    def abrir_manual_usuario(self):
+        try:
+            resource_path = sys._MEIPASS
+        except AttributeError:
+            resource_path = os.path.abspath(os.path.dirname(__file__))
+        pdf_path = os.path.join(resource_path, 'manualusuario.pdf')
+        subprocess.Popen(['start', pdf_path], shell=True)
+
+    def abrir_manual_tecnico(self):
+        try:
+            resource_path = sys._MEIPASS
+        except AttributeError:
+            resource_path = os.path.abspath(os.path.dirname(__file__))
+        pdf_path = os.path.join(resource_path, 'manualtecnico.pdf')
+        subprocess.Popen(['start', pdf_path], shell=True)
 
     def crear_widgets(self):
         header_general = tk.Frame(self, padx=20, pady=20, bg=self.background)

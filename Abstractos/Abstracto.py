@@ -17,3 +17,4 @@ class Abstracto(ABC):
     @abstractmethod
     def getColumna(self):
         return self.columna
+

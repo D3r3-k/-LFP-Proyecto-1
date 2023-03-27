@@ -1,0 +1,47 @@
+[
+    {
+       "Descripcion del Token": {
+          "No": 1,
+          "Lexema": "?",
+          "Tipo": "Error",
+          "Columna": 3,
+          "Fila": 1
+       }
+    },
+    {
+       "Descripcion del Token": {
+          "No": 2,
+          "Lexema": "*",
+          "Tipo": "Error",
+          "Columna": 8,
+          "Fila": 6
+       }
+    },
+    {
+       "Descripcion del Token": {
+          "No": 3,
+          "Lexema": "^",
+          "Tipo": "Error",
+          "Columna": 38,
+          "Fila": 8
+       }
+    },
+    {
+       "Descripcion del Token": {
+          "No": 4,
+          "Lexema": "+",
+          "Tipo": "Error",
+          "Columna": 11,
+          "Fila": 26
+       }
+    },
+    {
+       "Descripcion del Token": {
+          "No": 5,
+          "Lexema": "@",
+          "Tipo": "Error",
+          "Columna": 5,
+          "Fila": 61
+       }
+    }
+]
