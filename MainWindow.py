@@ -12,6 +12,7 @@ class MainWindow(tk.Tk):
         # VARIABLES
         self.ruta = None
         self.ruta_grafica = None
+        self.ruta_errores = None
         self.contenido_archivo = ""
         self.background = "#333333"
         self.lista_respuestas = []
@@ -46,7 +47,7 @@ class MainWindow(tk.Tk):
         archivo_menu.add_command(label="Guardar Como",
                                  command=self.guardar_archivo_como)
         archivo_menu.add_command(label="Analizar", command=self.analizar)
-        archivo_menu.add_command(label="Errores", command=self.generar_errores)
+        archivo_menu.add_command(label="Errores", command=self.mostrar_errores_anteriores)
         archivo_menu.add_separator()
         archivo_menu.add_command(label="Salir", command=self.quit())
         # MENU AYUDA
@@ -164,6 +165,7 @@ class MainWindow(tk.Tk):
     def leerArchivo(self, ruta):
         self.contenido_archivo = ""
         self.text_area.delete("1.0", tk.END)
+        self.text_area_err.delete("1.0", tk.END)
 
         archivo = open(ruta, 'r')
         lineas = archivo.readlines()
@@ -200,8 +202,8 @@ class MainWindow(tk.Tk):
         if nueva_ruta:
             archivo = open(nueva_ruta, 'w')
             archivo.write(self.text_area_err.get('1.0', tk.END))
-            mb.showinfo(
-                "Exito", f"El archivo se guardo correctamente en: \n{nueva_ruta}")
+            mb.showinfo("Exito", f"El archivo se guardo correctamente en: \n{nueva_ruta}")
+        self.ruta_errores = nueva_ruta
 
     def analizar(self):
         self.lista_respuestas = []
@@ -209,6 +211,7 @@ class MainWindow(tk.Tk):
         contenido = self.text_area.get('1.0', tk.END)
         analizar_caneda(contenido)
         self.lista_respuestas, self.lista_errores = obtener_respuestas()
+        self.generar_errores()
 
     def graficar_resultados(self):
         self.graficar(self.lista_respuestas)
@@ -351,21 +354,38 @@ class MainWindow(tk.Tk):
 
     def generar_errores(self):
         self.text_area_err.delete(1.0, tk.END)
-        cadena = "{\n"
+        cadena = "[\n"
         for i, r in enumerate(self.lista_errores):
             cadena += "    {\n"
             cadena += '       "Descripcion del Token": {\n'
             cadena += f'          "No": {i+1},\n'
-            cadena += f'          "Lexema": \'{r.getValor(None)}\',\n'
-            cadena += f'          "Tipo": {r.getTipo()},\n'
+            cadena += f'          "Lexema": \"{r.getValor(None)}\",\n'
+            cadena += f'          "Tipo": "{r.getTipo()}",\n'
             cadena += f'          "Columna": {r.getColumna()},\n'
             cadena += f'          "Fila": {r.getFila()}\n'
             cadena += "       }\n"
-            cadena += "    },\n"
-        cadena += "}"
+            if i != len(self.lista_errores)-1:
+                cadena += "    },\n"
+        cadena += "    }\n"
+        cadena += "]"
         self.text_area_err.insert(tk.END, cadena)
         pass
 
+    def mostrar_errores_anteriores(self):
+        self.text_area_err.delete(1.0, tk.END)
+        try:
+            if self.ruta_errores:
+                contenido = ''
+                archivo = open(self.ruta_errores, 'r')
+                lineas = archivo.readlines()
+                for linea in lineas:
+                    contenido += linea
+                archivo.close()
+                self.text_area_err.insert(tk.END, contenido)
+            else:
+                mb.showerror("Error", "No se ha seleccionado un archivo de errores")
+        except Exception as e:
+            mb.showerror("Error", str(e))
     # def errores(self):
     #     print(f">>---------------------<<")
     #     for r in lista_errores:
